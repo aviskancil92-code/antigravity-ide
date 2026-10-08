@@ -69,6 +69,45 @@ def strip(s):
     s = re.sub(r'//[^\n]*', '', s)
     return s
 
+def block_comment_depth(src):
+    """Pemindai sederhana yang meniru lexer Kotlin: komentar blok BERSARANG, string, karakter,
+    komentar baris. Mengembalikan (kedalaman_akhir, nomor_baris_pembuka_terakhir)."""
+    i, n, depth, line, opened = 0, len(src), 0, 1, 0
+    while i < n:
+        c = src[i]
+        two = src[i:i + 2]
+        if c == "\n": line += 1
+        if depth == 0:
+            if two == "//":
+                while i < n and src[i] != "\n": i += 1
+                continue
+            if src.startswith('"""', i):
+                j = src.find('"""', i + 3)
+                j = n if j < 0 else j + 3
+                line += src.count("\n", i, j); i = j; continue
+            if c == '"':
+                i += 1
+                while i < n and src[i] != '"' and src[i] != "\n":
+                    i += 2 if src[i] == "\\" else 1
+                i += 1; continue
+            if c == "'":
+                j = i + 1
+                j += 2 if j < n and src[j] == "\\" else 1
+                while j < n and src[j] != "'" and src[j] != "\n": j += 1
+                i = j + 1; continue
+        if two == "/*":
+            depth += 1; opened = line; i += 2; continue
+        if two == "*/" and depth > 0:
+            depth -= 1; i += 2; continue
+        i += 1
+    return depth, opened
+
+for f in kt:
+    d, ln = block_comment_depth(open(f, encoding="utf-8").read())
+    if d != 0:
+        err(f"{os.path.relpath(f, ROOT)}: komentar blok tidak tertutup (kedalaman {d}, terakhir dibuka di baris {ln}) "
+            f"— di Kotlin komentar bersarang, jadi '/*' di dalam komentar (mis. 'folder/*.url') ikut membukanya")
+
 for f in kt:
     raw = open(f, encoding="utf-8").read(); s = strip(raw)
     rel = os.path.relpath(f, ROOT)

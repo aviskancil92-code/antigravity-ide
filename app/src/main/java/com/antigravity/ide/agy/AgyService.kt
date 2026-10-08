@@ -111,7 +111,7 @@ class AgyService : Service() {
     }
 
     /**
-     * Pantau URL yang dititipkan guest lewat shim xdg-open (/root/.agy/openurl/*.url) dan
+     * Pantau URL yang dititipkan guest lewat shim xdg-open (folder /root/.agy/openurl, berkas berakhiran .url) dan
      * teruskan ke UI untuk dibuka di peramban Android (login Google).
      */
     private fun startUrlWatcher() {
