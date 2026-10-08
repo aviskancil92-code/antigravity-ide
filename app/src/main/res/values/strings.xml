@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Antigravity IDE</string>
+    <string name="tagline">Debian + Antigravity Server di Android — tanpa root</string>
+
+    <!-- Setup -->
+    <string name="setup_description">Aplikasi ini menjalankan Debian GNU/Linux lengkap bersama Antigravity Server (agy-server + language_server) di latar belakang perangkat Anda, lalu menampilkan UI web Antigravity langsung di dalam aplikasi.\n\nSemua komponen diunduh saat instalasi pertama: APK tetap kecil. Anda tetap perlu masuk dengan akun Google Anda sendiri.</string>
+    <string name="download_plan_title">Rencana unduhan (sekali saja)</string>
+    <string name="download_plan">• proot + library     ±0,4 MB\n• rootfs Debian 12    ±90 MB\n• agy-server          ±10 MB\n• Antigravity bundel  ±170 MB\n\nTotal ruang terpasang: ±1 GB</string>
+    <string name="storage_free_fmt">Ruang bebas: %1$s</string>
+    <string name="install_now">Pasang sekarang</string>
+    <string name="retry">Coba lagi</string>
+    <string name="setup_manual_hint">Kuota terbatas? Unduh berkas di perangkat lain lalu gunakan menu → Pengaturan → Impor.</string>
+    <string name="preparing_install">Memulai instalasi…</string>
+
+    <!-- Instalasi -->
+    <string name="install_done">Instalasi selesai — memulai server…</string>
+    <string name="install_failed_fmt">Instalasi gagal:\n%1$s</string>
+    <string name="cancel">Batalkan</string>
+    <string name="low_disk_title">Ruang penyimpanan rendah</string>
+    <string name="low_disk_msg_fmt">Instalasi membutuhkan ±1 GB ruang bebas. Tersedia saat ini: %1$s. Lanjutkan saja?</string>
+    <string name="continue_anyway">Lanjutkan saja</string>
+    <string name="manual_install_title">Pasang dari berkas?</string>
+    <string name="manual_install_msg">Debian akan dipasang ulang dari awal memakai berkas pilihan Anda (rootfs atau bundel Antigravity). Data di folder /sdcard tidak terpengaruh, tetapi isi ruang kerja lama, token login, dan kata sandi akan hilang. Lanjutkan?</string>
+
+    <!-- Loading / status -->
+    <string name="status_starting">Menyiapkan Linux &amp; Antigravity…</string>
+    <string name="status_restarting_fmt">Server mati — memulai ulang (percobaan %1$d)…</string>
+    <string name="status_error_fmt">Kesalahan: %1$s</string>
+    <string name="status_stopped">Server dihentikan.</string>
+    <string name="loading_hint">Start dingin bisa memakan waktu hingga beberapa menit.</string>
+    <string name="action_start">Mulai server</string>
+    <string name="action_retry_start">Coba mulai ulang</string>
+
+    <!-- Menu -->
+    <string name="menu_restart">Mulai ulang server</string>
+    <string name="menu_stop">Hentikan server</string>
+    <string name="settings">Pengaturan</string>
+    <string name="logs">Lihat log</string>
+    <string name="about">Tentang</string>
+    <string name="restarting_server">Memulai ulang server…</string>
+
+    <!-- Pengaturan -->
+    
+    <string name="setting_keep_on">Layar selalu aktif</string>
+    <string name="advanced">Lanjutan</string>
+    <string name="import_rootfs">Impor rootfs Debian dari berkas…</string>
+    <string name="wipe">Hapus data Linux (±1 GB)…</string>
+    <string name="versions_fmt">Antigravity %1$s\nrootfs %2$s</string>
+    <string name="applied_after_restart">Berlaku setelah server dimulai ulang…</string>
+    <string name="wipe_title">Hapus seluruh data Linux?</string>
+    <string name="wipe_msg">Rootfs Debian, agy-server, language_server, token login, ruang kerja, dan pengaturan akan dihapus. Aplikasi kembali ke kondisi awal. Berkas di penyimpanan bersama (/sdcard) tidak terpengaruh.</string>
+    <string name="wipe_yes">Hapus</string>
+
+    <!-- Lain-lain -->
+    <string name="no_logs">Belum ada log.</string>
+    <string name="downloading_fmt">Mengunduh %1$s…</string>
+    <string name="saved_fmt">Tersimpan: %1$s</string>
+    <string name="download_failed_fmt">Unduhan gagal: %1$s</string>
+    <string name="about_msg_fmt">Antigravity IDE — pembungkus Android tidak resmi untuk Antigravity Server (AFSlayer/antigravity-server, Apache-2.0).\n\n• Antigravity %1$s (bundel resmi Google, diunduh saat instalasi)\n• Debian %2$s rootfs (linuxcontainers.org)\n• proot (Termux)\n\nTidak berafiliasi dengan Google. Akses ke server dilindungi kata sandi; perlakukan seperti akses shell.</string>
+    <string name="menu_storage">Izin penyimpanan</string>
+    <string name="hint_three_finger">Layar penuh aktif. Ketuk 3 jari untuk menampilkan/menyembunyikan header.</string>
+    <string name="popup_close">Tutup</string>
+    <string name="popup_browser">Browser</string>
+    <string name="storage_title">Akses penyimpanan</string>
+    <string name="storage_rationale">Izinkan akses penyimpanan agar Antigravity bisa membuka dan menyimpan berkas di /sdcard.</string>
+    <string name="storage_allow">Izinkan</string>
+    <string name="storage_denied">Izin penyimpanan ditolak. Buka menu ⋮ → Izin penyimpanan untuk mencoba lagi.</string>
+    <string name="storage_granted">Izin diberikan. Server dimulai ulang agar /sdcard terbaca.</string>
+    <string name="storage_already">Akses penyimpanan sudah aktif.</string>
+    <string name="menu_shortcuts">Pintasan keyboard</string>
+    <string name="menu_keybar">Bar tombol ekstra</string>
+    <string name="shortcuts_title">Pintasan keyboard — ketuk untuk mengirim ke aplikasi</string>
+    <string name="menu_volkeys">Tombol volume</string>
+    <string name="volkeys_title">Fungsi tombol volume</string>
+    <string name="volkeys_opt0">Ala Termux: Vol-Bawah = Ctrl, Vol-Atas = Fn</string>
+    <string name="volkeys_opt1">Vol-Bawah = Ctrl, Vol-Atas = Shift</string>
+    <string name="volkeys_opt2">Mati (volume seperti biasa)</string>
+    <string name="volume_help">Tombol volume (menu ⋮ → Tombol volume): tahan Vol-Bawah lalu ketik huruf = Ctrl+huruf (atau ketuk sekali, lalu ketik). Mode Termux: tahan/ketuk Vol-Atas lalu W A S D = panah, E = Esc, T = Tab, P/N = PgUp/PgDn, I/O = Home/End, X = Delete, H = ~, U = _, L = |, 1–9/0 = F1–F10, . = Ctrl+\\, Q = bar tombol. Shift &amp; Alt: ketuk tombolnya di bar (ketuk lama = kunci).</string>
+    <string name="install_title">Menyiapkan lingkungan</string>
+    <string name="install_waiting">Memulai…</string>
+    <string name="install_footer">Menyiapkan ruang kerja seluler Anda</string>
+    <string name="step_proot">Proot &amp; pustaka</string>
+    <string name="step_debian">Sistem Debian</string>
+    <string name="step_server">Antigravity Server</string>
+    <string name="step_final">Konfigurasi akhir</string>
+    <string name="step_waiting">Menunggu…</string>
+    <string name="step_done">Selesai</string>
+    <string name="hint_gestures">Ketuk 3 jari: menu · Ketuk 4 jari: keyboard</string>
+    <string name="menu_title">Menu</string>
+    <string name="menu_back">Kembali</string>
+    <string name="menu_section_server">SERVER</string>
+    <string name="menu_section_input">INPUT</string>
+    <string name="menu_section_display">TAMPILAN</string>
+    <string name="menu_section_more">LAINNYA</string>
+    <string name="menu_keyboard">Keyboard virtual</string>
+    <string name="menu_keyboard_sub">Atau ketuk 4 jari</string>
+    <string name="menu_volume">Tombol volume</string>
+    <string name="menu_volume_sub">Vol-Bawah = Ctrl · Vol-Atas = Fn</string>
+    <string name="menu_scale">Ukuran tampilan</string>
+    <string name="menu_scale_reset">Atur ulang</string>
+    <string name="menu_keep_on">Layar selalu aktif</string>
+    <string name="storage_denied_short">Izin penyimpanan ditolak — /sdcard tidak dapat dibuka.</string>
+    <string name="storage_all_files_title">Akses semua berkas</string>
+    <string name="storage_all_files_msg">Aktifkan \"Akses semua berkas\" agar Antigravity IDE bisa membuka /sdcard.</string>
+    <string name="open_settings">Buka pengaturan</string>
+
+    <!-- Antigravity -->
+    <string name="password_fmt">Kata sandi web: %1$s</string>
+    <string name="password_pending">Kata sandi dibuat saat server pertama kali dijalankan.</string>
+    <string name="password_copied">Kata sandi disalin.</string>
+    <string name="copy_password">Salin kata sandi</string>
+    <string name="change_password">Ubah kata sandi…</string>
+    <string name="change_password_msg">Minimal 8 karakter, tanpa spasi. Server dimulai ulang setelah diubah.</string>
+    <string name="password_invalid">Kata sandi minimal 8 karakter dan tanpa spasi.</string>
+    <string name="password_changed">Kata sandi diubah. Memulai ulang server…</string>
+    <string name="working">Memproses…</string>
+    <string name="import_token">Impor token login Google dari berkas…</string>
+    <string name="token_imported">Token dipasang. Memulai ulang server…</string>
+    <string name="token_unreadable">Berkas token tidak dapat dibaca.</string>
+    <string name="token_failed_fmt">Impor token gagal: %1$s</string>
+    <string name="import_bundle">Impor Antigravity (Antigravity.tar.gz / language_server)…</string>
+    <string name="doctor">Diagnostik (agy-server doctor)…</string>
+    <string name="doctor_timeout">Diagnostik melewati batas waktu.</string>
+    <string name="doctor_empty_fmt">Tidak ada keluaran (kode keluar %1$d).</string>
+    <string name="lan_warning">Peringatan: port server terjangkau dari jaringan Wi-Fi/LAN. Akses tetap dilindungi kata sandi; gunakan jaringan tepercaya.</string>
+</resources>

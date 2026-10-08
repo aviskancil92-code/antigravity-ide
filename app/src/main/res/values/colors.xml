@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="brand">#3B82F6</color>
+    <color name="brand_dark">#1D4ED8</color>
+    <color name="icon_bg">#FFFFFF</color>
+    <color name="logo_bg">#101418</color> <!-- kompatibilitas: berkas lama bg_logo.xml -->
+    <color name="webview_bg">#0F1115</color>
+
+    <color name="bg_screen">#FAFBFD</color>
+    <color name="bg_card">#FFFFFF</color>
+    <color name="card_stroke">#E6E9EF</color>
+    <color name="text_primary">#0F1222</color>
+    <color name="text_secondary">#6B7280</color>
+    <color name="accent_blue">#3B82F6</color>
+    <color name="accent_green">#22C55E</color>
+    <color name="accent_green_bg">#E5F8EC</color>
+    <color name="accent_red">#EF4444</color>
+    <color name="track">#E8EBF1</color>
+    <color name="tile_bg">#F1F4F9</color>
+    <color name="tile_active_bg">#E8EEFF</color>
+
+    <color name="grouped_bg">#F2F2F7</color>
+    <color name="separator">#D1D1D6</color>
+
+    <color name="kb_bg">#1B1D27</color>
+    <color name="kb_key">#2B2E3B</color>
+    <color name="kb_key_pressed">#444969</color>
+    <color name="kb_key_mod">#232633</color>
+    <color name="kb_active">#4C9AFF</color>
+    <color name="kb_locked">#F5A524</color>
+    <color name="kb_text">#F2F4F8</color>
+    <color name="kb_text_dim">#9EA5B5</color>
+</resources>
