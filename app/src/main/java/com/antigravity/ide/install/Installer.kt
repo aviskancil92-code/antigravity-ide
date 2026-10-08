@@ -368,7 +368,7 @@ class Installer(private val ctx: Context) {
 
     private fun finalize(staging: File, ideVersion: String) {
         val rootfs = File(staging, "debian")
-        AgyServer.writeStartScript(rootfs)
+        AgyServer.writeStartScript(ctx, rootfs)
         val state = AppState(
             installed = true,
             ideVersion = ideVersion,

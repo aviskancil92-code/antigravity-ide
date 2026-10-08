@@ -129,7 +129,7 @@ class AgyService : Service() {
                 // ---- 1) siapkan guest + provisioning (config & kata sandi) ----
                 _stage.value = "1/3 Menyiapkan sistem Debian…"
                 LinuxRuntime.prepareForRun(this)
-                AgyServer.writeStartScript(LinuxRuntime.rootfsDir(this))
+                AgyServer.writeStartScript(this, LinuxRuntime.rootfsDir(this))
                 _stage.value = "2/3 Konfigurasi awal agy-server…"
                 logLine("[app] konfigurasi awal (agy-server config/passwd)")
                 when (val prov = AgyServer.ensureProvisioned(this)) {

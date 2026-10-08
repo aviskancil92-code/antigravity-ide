@@ -53,6 +53,12 @@ JDK 17, Android SDK 34, Gradle 8.9 (wrapper disertakan). `./gradlew :app:assembl
 
 `targetSdk = 28` disengaja (sama dengan Termux): Android 10+ melarang `exec()` dari penyimpanan aplikasi untuk targetSdk ≥ 29.
 
+## Catatan Android penting
+
+`agy-server` menemukan port acak `language_server` lewat `lsof`, lalu `/proc/net/tcp` — keduanya tidak tersedia
+(Android 10+ memblokir `/proc/net`). `assets/lsof-shim.sh` dipasang sebagai `/usr/local/bin/lsof` di guest dan
+menyusun keluaran lsof dari `language-server.log`. Bila upstream mengganti metode penemuan port, sesuaikan shim ini.
+
 ## Status verifikasi — baca ini
 
 Lingkungan pembuatan **tidak punya Android SDK/Gradle maupun emulator/perangkat**, jadi kode **belum pernah dikompilasi
@@ -62,7 +68,7 @@ yang sudah terbukti. Kerangka (proot, Archive, Net, WebView, popup, keyboard) di
 
 Hal yang **tidak bisa saya pastikan** dan perlu diuji di perangkat:
 1. `language_server` Antigravity berjalan di bawah proot (ptrace) — performa/stabilitas belum teruji; memori bisa besar di HP RAM kecil.
-2. Alamat bind default `agy-server serve` tidak terdokumentasi di README upstream; app mendeteksi paparan LAN, bukan mencegahnya.
+2. `agy-server` bawaan mengikat `0.0.0.0`; app memaksa `bind_addr` ke `127.0.0.1` di config.json sebelum tiap start (belum terbukti dihormati — peringatan LAN tetap aktif).
 3. Alur login Google lewat WebView/popup/peramban — Google sering menolak WebView; fallback impor token tersedia.
 4. Nama aset rilis `agy-server_linux_<arch>.tar.gz` dan pola URL bundel mengikuti `install.sh` upstream per Oktober 2026; bila upstream mengubahnya, edit `Pins.kt`/`AgyServer.kt`.
 5. ARMv7 32-bit tidak didukung (Antigravity hanya arm64/x86_64).

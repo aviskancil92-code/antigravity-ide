@@ -109,7 +109,8 @@ object AgyServer {
     // --------------------------------------------------------------- guest scripts
 
     /** Skrip start di dalam guest (idempoten). Dijalankan proot sebagai proses server utama. */
-    fun writeStartScript(rootfs: File) {
+    fun writeStartScript(ctx: Context, rootfs: File) {
+        installLsofShim(ctx, rootfs)
         val f = hostFile(rootfs, GUEST_START)
         f.parentFile?.mkdirs()
         f.writeText(
@@ -118,6 +119,22 @@ object AgyServer {
                 "exec $GUEST_BIN serve\n"
         )
         runCatching { android.system.Os.chmod(f.path, 0x1ED) } // 0755
+    }
+
+    /**
+     * Pasang `lsof` palsu (assets/lsof-shim.sh) ke /usr/local/bin. Wajib: agy-server menemukan port
+     * acak language_server lewat lsof / /proc/net/tcp, yang diblokir Android untuk aplikasi biasa.
+     */
+    private fun installLsofShim(ctx: Context, rootfs: File) {
+        try {
+            val dst = hostFile(rootfs, "/usr/local/bin/lsof")
+            dst.parentFile?.mkdirs()
+            runCatching { Files.deleteIfExists(dst.toPath()) }
+            ctx.assets.open("lsof-shim.sh").use { i -> dst.outputStream().use { o -> i.copyTo(o) } }
+            android.system.Os.chmod(dst.path, 0x1ED) // 0755
+        } catch (e: Exception) {
+            AgyService.logLine("[app] gagal memasang shim lsof: ${e.message}")
+        }
     }
 
     // ------------------------------------------------------------------ provisioning
@@ -222,7 +239,8 @@ object AgyServer {
     fun collectLiveDiagnostics(ctx: Context, ports: Collection<Int>): String {
         val steps = mutableListOf(
             "baca /proc/net/tcp" to listOf("/usr/bin/head", "-n", "6", "/proc/net/tcp"),
-            "lsof/ss/netstat ada?" to listOf("/bin/bash", "-c", "command -v lsof ss netstat || echo tidak-ada")
+            "lsof/ss/netstat ada?" to listOf("/bin/bash", "-c", "command -v lsof ss netstat || echo tidak-ada"),
+            "uji shim lsof" to listOf("/usr/local/bin/lsof", "-nP", "-iTCP", "-sTCP:LISTEN")
         )
         // Petunjuk statis dari biner agy-server: bagaimana ia mencari port language_server?
         steps += "agy-server: rujukan /proc & alat jaringan" to listOf(
