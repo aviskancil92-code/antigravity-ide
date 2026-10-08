@@ -19,7 +19,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.io.BufferedReader
@@ -55,6 +57,7 @@ class AgyService : Service() {
     @Volatile private var stopRequested = false
     @Volatile private var loopActive = false
     @Volatile private var manualRestart = false
+    @Volatile private var urlWatcherActive = false
     private var lsLogOffset = 0L
     private val lsPorts = java.util.concurrent.ConcurrentHashMap.newKeySet<Int>()
     private var diagDone = false
@@ -100,10 +103,56 @@ class AgyService : Service() {
             return START_NOT_STICKY
         }
 
+        startUrlWatcher()
         if (!loopActive) {
             launchLoop()
         }
         return START_STICKY
+    }
+
+    /**
+     * Pantau URL yang dititipkan guest lewat shim xdg-open (/root/.agy/openurl/*.url) dan
+     * teruskan ke UI untuk dibuka di peramban Android (login Google).
+     */
+    private fun startUrlWatcher() {
+        if (urlWatcherActive) return
+        urlWatcherActive = true
+        scope.launch(Dispatchers.IO) {
+            val dir = AgyServer.hostFile(LinuxRuntime.rootfsDir(this@AgyService), "/root/.agy/openurl")
+            while (true) {
+                delay(500)
+                try {
+                    val files = dir.listFiles { f -> f.isFile && f.name.endsWith(".url") }
+                        ?.sortedBy { it.name } ?: continue
+                    for (f in files) {
+                        val url = runCatching { f.readText().trim() }.getOrDefault("")
+                        f.delete()
+                        // Hanya http(s) — jangan teruskan skema lain ke sistem.
+                        if (url.length in 8..4096 && Regex("^https?://\\S+$").matches(url)) {
+                            logLine("[app] membuka URL login di peramban: " + url.substringBefore('?').take(120))
+                            _openUrl.tryEmit(url)
+                            if (_openUrl.subscriptionCount.value == 0) notifyOpenUrl(url)
+                        }
+                    }
+                } catch (_: Exception) {
+                }
+            }
+        }
+    }
+
+    /** Aplikasi tidak di layar: tawarkan lewat notifikasi agar login tetap bisa dilanjutkan. */
+    private fun notifyOpenUrl(url: String) {
+        val pi = PendingIntent.getActivity(
+            this, 2, Intent(Intent.ACTION_VIEW, android.net.Uri.parse(url)),
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        val n = baseBuilder()
+            .setContentText("Ketuk untuk melanjutkan login Google")
+            .setContentIntent(pi)
+            .setAutoCancel(true)
+            .setOngoing(false)
+            .build()
+        getSystemService(NotificationManager::class.java).notify(NOTIF_ID + 1, n)
     }
 
     private fun launchLoop() {
@@ -422,6 +471,10 @@ class AgyService : Service() {
         val lanExposed: StateFlow<Boolean> = _lanExposed
 
         private val logBuffer = ArrayDeque<String>()
+
+        /** URL yang diminta guest untuk dibuka di peramban Android (login Google). */
+        private val _openUrl = MutableSharedFlow<String>(extraBufferCapacity = 8)
+        val openUrl: SharedFlow<String> = _openUrl
 
         /** Tahap yang sedang berjalan (untuk layar loading), mis. "Konfigurasi awal…". */
         private val _stage = MutableStateFlow("")

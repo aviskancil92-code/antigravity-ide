@@ -64,6 +64,8 @@ object LinuxRuntime {
         "unset LD_LIBRARY_PATH PROOT_TMP_DIR PROOT_NO_SECCOMP TMPDIR",
         "export HOME=/root USER=root LOGNAME=root SHELL=/bin/bash LANG=C.UTF-8 TERM=xterm-256color TMPDIR=/tmp",
         "export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+        // Peramban palsu (shim): URL login diteruskan ke aplikasi Android.
+        "export BROWSER=/usr/local/bin/xdg-open",
         // Biner Go (language_server) membaca bundel CA dari sini bila ada.
         "if [ -f /etc/ssl/certs/ca-certificates.crt ]; then export SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt; fi"
     ).joinToString("\n") + "\n"

@@ -124,4 +124,6 @@
     <string name="doctor_timeout">Diagnostik melewati batas waktu.</string>
     <string name="doctor_empty_fmt">Tidak ada keluaran (kode keluar %1$d).</string>
     <string name="lan_warning">Peringatan: port server terjangkau dari jaringan Wi-Fi/LAN. Akses tetap dilindungi kata sandi; gunakan jaringan tepercaya.</string>
+    <string name="login_in_browser">Selesaikan login Google di peramban, lalu kembali ke aplikasi ini.</string>
+    <string name="no_browser">Tidak ada peramban untuk membuka halaman login.</string>
 </resources>

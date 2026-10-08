@@ -213,6 +213,7 @@ class MainActivity : AppCompatActivity() {
         storageGrantedAtStart = hasStoragePermission()
         observeServerState()
         observeLoadingDetails()
+        observeOpenUrls()
         binding.buttonLoadingLogs.setOnClickListener { showLogs() }
         initUi()
         requestStorageAtLaunch()
@@ -324,6 +325,24 @@ class MainActivity : AppCompatActivity() {
     }
 
     /** Selama layar loading tampil: perbarui tahap + ekor log tiap detik. */
+    /** URL login dari guest (via shim xdg-open) -> buka di peramban Android (pemilih akun Google). */
+    private fun observeOpenUrls() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                AgyService.openUrl.collect { url ->
+                    try {
+                        startActivity(
+                            Intent(Intent.ACTION_VIEW, Uri.parse(url)).addCategory(Intent.CATEGORY_BROWSABLE)
+                        )
+                        Toast.makeText(this@MainActivity, R.string.login_in_browser, Toast.LENGTH_LONG).show()
+                    } catch (e: Exception) {
+                        Toast.makeText(this@MainActivity, R.string.no_browser, Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        }
+    }
+
     private fun observeLoadingDetails() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {

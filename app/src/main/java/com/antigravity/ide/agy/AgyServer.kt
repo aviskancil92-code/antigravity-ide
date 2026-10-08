@@ -110,7 +110,7 @@ object AgyServer {
 
     /** Skrip start di dalam guest (idempoten). Dijalankan proot sebagai proses server utama. */
     fun writeStartScript(ctx: Context, rootfs: File) {
-        installLsofShim(ctx, rootfs)
+        installShims(ctx, rootfs)
         val f = hostFile(rootfs, GUEST_START)
         f.parentFile?.mkdirs()
         f.writeText(
@@ -125,15 +125,25 @@ object AgyServer {
      * Pasang `lsof` palsu (assets/lsof-shim.sh) ke /usr/local/bin. Wajib: agy-server menemukan port
      * acak language_server lewat lsof / /proc/net/tcp, yang diblokir Android untuk aplikasi biasa.
      */
-    private fun installLsofShim(ctx: Context, rootfs: File) {
-        try {
-            val dst = hostFile(rootfs, "/usr/local/bin/lsof")
-            dst.parentFile?.mkdirs()
-            runCatching { Files.deleteIfExists(dst.toPath()) }
-            ctx.assets.open("lsof-shim.sh").use { i -> dst.outputStream().use { o -> i.copyTo(o) } }
-            android.system.Os.chmod(dst.path, 0x1ED) // 0755
-        } catch (e: Exception) {
-            AgyService.logLine("[app] gagal memasang shim lsof: ${e.message}")
+    private fun installShims(ctx: Context, rootfs: File) {
+        // asset -> nama-nama di /usr/local/bin
+        val shims = listOf(
+            "lsof-shim.sh" to listOf("lsof"),
+            // Peramban palsu: nama-nama yang dicari pustaka "open browser" di Linux.
+            "xdg-open-shim.sh" to listOf("xdg-open", "x-www-browser", "www-browser", "sensible-browser", "gnome-open")
+        )
+        for ((asset, names) in shims) {
+            for (name in names) {
+                try {
+                    val dst = hostFile(rootfs, "/usr/local/bin/$name")
+                    dst.parentFile?.mkdirs()
+                    runCatching { Files.deleteIfExists(dst.toPath()) }
+                    ctx.assets.open(asset).use { i -> dst.outputStream().use { o -> i.copyTo(o) } }
+                    android.system.Os.chmod(dst.path, 0x1ED) // 0755
+                } catch (e: Exception) {
+                    AgyService.logLine("[app] gagal memasang shim $name: ${e.message}")
+                }
+            }
         }
     }
 
