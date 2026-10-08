@@ -214,6 +214,7 @@ class MainActivity : AppCompatActivity() {
         observeServerState()
         observeLoadingDetails()
         observeOpenUrls()
+        observeLoginDone()
         binding.buttonLoadingLogs.setOnClickListener { showLogs() }
         initUi()
         requestStorageAtLaunch()
@@ -326,6 +327,24 @@ class MainActivity : AppCompatActivity() {
 
     /** Selama layar loading tampil: perbarui tahap + ekor log tiap detik. */
     /** URL login dari guest (via shim xdg-open) -> buka di peramban Android (pemilih akun Google). */
+    private var handledLoginStamp = AgyService.loginStamp.value
+
+    /** Login Google selesai di peramban -> muat ulang UI (WebSocket lama biasanya sudah putus). */
+    private fun observeLoginDone() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                AgyService.loginStamp.collect { stamp ->
+                    if (stamp != 0L && stamp != handledLoginStamp) {
+                        handledLoginStamp = stamp
+                        delay(1500)
+                        Toast.makeText(this@MainActivity, R.string.login_done_reloading, Toast.LENGTH_SHORT).show()
+                        webView?.reload()
+                    }
+                }
+            }
+        }
+    }
+
     private fun observeOpenUrls() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -815,6 +834,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val menuHost = object : MenuHost {
+        override fun reloadPage() { webView?.reload() }
+
         override fun restartServer() {
             AgyService.requestRestart(this@MainActivity)
             Toast.makeText(this@MainActivity, R.string.restarting_server, Toast.LENGTH_SHORT).show()

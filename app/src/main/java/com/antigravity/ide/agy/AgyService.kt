@@ -58,6 +58,8 @@ class AgyService : Service() {
     @Volatile private var loopActive = false
     @Volatile private var manualRestart = false
     @Volatile private var urlWatcherActive = false
+    @Volatile private var lastLoginUrlAt = 0L
+    private var tokenSig = -1L
     private var lsLogOffset = 0L
     private val lsPorts = java.util.concurrent.ConcurrentHashMap.newKeySet<Int>()
     private var diagDone = false
@@ -119,8 +121,10 @@ class AgyService : Service() {
         urlWatcherActive = true
         scope.launch(Dispatchers.IO) {
             val dir = AgyServer.hostFile(LinuxRuntime.rootfsDir(this@AgyService), "/root/.agy/openurl")
+            var tick = 0
             while (true) {
                 delay(500)
+                if (++tick % 4 == 0) checkLoginToken()
                 try {
                     val files = dir.listFiles { f -> f.isFile && f.name.endsWith(".url") }
                         ?.sortedBy { it.name } ?: continue
@@ -130,6 +134,7 @@ class AgyService : Service() {
                         // Hanya http(s) — jangan teruskan skema lain ke sistem.
                         if (url.length in 8..4096 && Regex("^https?://\\S+$").matches(url)) {
                             logLine("[app] membuka URL login di peramban: " + url.substringBefore('?').take(120))
+                            lastLoginUrlAt = System.currentTimeMillis()
                             _openUrl.tryEmit(url)
                             if (_openUrl.subscriptionCount.value == 0) notifyOpenUrl(url)
                         }
@@ -137,6 +142,30 @@ class AgyService : Service() {
                 } catch (_: Exception) {
                 }
             }
+        }
+    }
+
+    /**
+     * Deteksi login Google selesai: berkas token di ~/.gemini berubah setelah URL login dibuka.
+     * Koneksi WebSocket UI sering terputus saat aplikasi di latar belakang (Chrome di depan), jadi
+     * UI diminta memuat ulang agar status akun terbaca. Perubahan token tanpa login (refresh
+     * berkala) diabaikan: hanya dihitung dalam 10 menit setelah URL login dibuka.
+     */
+    private fun checkLoginToken() {
+        try {
+            val dir = AgyServer.hostFile(LinuxRuntime.rootfsDir(this), "/root/.gemini")
+            var sig = 0L
+            dir.listFiles { f ->
+                f.isFile && (f.name.contains("oauth", true) || f.name.contains("token", true))
+            }?.forEach { sig += it.lastModified() + it.length() }
+            if (tokenSig == -1L) { tokenSig = sig; return }
+            if (sig != tokenSig) {
+                tokenSig = sig
+                val recent = System.currentTimeMillis() - lastLoginUrlAt < 600_000L
+                logLine("[app] berkas token berubah (login terkait=$recent)")
+                if (sig > 0 && recent) _loginStamp.value = System.currentTimeMillis()
+            }
+        } catch (_: Exception) {
         }
     }
 
@@ -475,6 +504,10 @@ class AgyService : Service() {
         /** URL yang diminta guest untuk dibuka di peramban Android (login Google). */
         private val _openUrl = MutableSharedFlow<String>(extraBufferCapacity = 8)
         val openUrl: SharedFlow<String> = _openUrl
+
+        /** Cap waktu login Google selesai (0 = belum pernah). UI memuat ulang bila berubah. */
+        private val _loginStamp = MutableStateFlow(0L)
+        val loginStamp: StateFlow<Long> = _loginStamp
 
         /** Tahap yang sedang berjalan (untuk layar loading), mis. "Konfigurasi awal…". */
         private val _stage = MutableStateFlow("")

@@ -21,6 +21,7 @@ import com.google.android.material.materialswitch.MaterialSwitch
 /** Aksi yang dibutuhkan menu; diimplementasikan oleh MainActivity. */
 interface MenuHost {
     fun restartServer()
+    fun reloadPage()
     fun stopServer()
     var keyboardOpen: Boolean
     var volumeKeysOn: Boolean
@@ -75,6 +76,7 @@ class MenuScreen(private val ctx: Context, private val host: MenuHost, private v
         // --- SERVER
         content.addView(header(R.string.menu_section_server))
         content.addView(card(
+            actionRow("⟳", 0xFF22C55E.toInt(), ctx.getString(R.string.menu_reload)) { host.reloadPage(); onClose() },
             actionRow("↻", 0xFF3B82F6.toInt(), ctx.getString(R.string.menu_restart)) { host.restartServer(); onClose() },
             actionRow("■", 0xFFEF4444.toInt(), ctx.getString(R.string.menu_stop)) { host.stopServer(); onClose() }
         ))
